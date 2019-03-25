@@ -1,6 +1,8 @@
 import * as React from "react";
 import { graphql } from "gatsby";
 import GatsbyImage from "gatsby-image";
+import { Layout } from "src/components/Layout";
+import prop from "ramda/src/prop";
 
 export interface Props {
   data: {
@@ -11,9 +13,12 @@ export interface Props {
 const IndexPage: React.SFC<Props> = props => {
   console.log(props.data);
   return (
-    <div style={{ width: "100%", height: "100%" }}>
-      <GatsbyImage fluid={props.data.img.childImageSharp.fluid} />
-    </div>
+    <Layout>
+      <div style={{ width: "100%", height: "100%" }}>
+        {prop("name", { name: "Test" })}
+        <GatsbyImage fluid={props.data.img.childImageSharp.fluid} />
+      </div>
+    </Layout>
   );
 };
 
