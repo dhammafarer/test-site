@@ -3,10 +3,10 @@ const path = require("path");
 module.exports = {
   plugins: [
     {
-      resolve: "gatsby-plugin-webpack-bundle-analyzer",
+      resolve: "gatsby-plugin-webpack-bundle-analyser-v2",
       options: {
-        analyzerPort: 3000,
-        production: true,
+        analyzerMode: "server",
+        analyzerPort: "3000",
       },
     },
     "gatsby-plugin-react-helmet",
