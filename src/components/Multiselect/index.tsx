@@ -36,6 +36,8 @@ interface Props {
 const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
   const ref = React.useRef(null);
   const inputRef = React.useRef(null);
+  const optionsRef = React.useRef(null);
+  const itemRef = React.useRef(null);
   const [selectable, setSelectable] = React.useState(items);
   const [show, toggle] = React.useState(false);
   const [input, setInput] = React.useState("");
@@ -97,11 +99,55 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
   };
 
   const handleKeyPress = (e: any) => {
+    // press up
     if (e.which === 40) {
-      setActive(active < selectable.length - 1 ? active + 1 : 0);
+      const newActive = active < selectable.length - 1 ? active + 1 : 0;
+      setActive(newActive);
+      if (optionsRef.current && itemRef.current) {
+        const ir = itemRef.current;
+        const parent = ir.offsetParent;
+        const {
+          top: parentTop,
+          height: scrollHeight,
+        } = parent.getBoundingClientRect();
+        const { top, height } = ir.getBoundingClientRect();
+        const offset = top - parentTop + height;
+        console.log("***");
+        console.log("offset :", offset);
+        const hidden = offset + height >= scrollHeight;
+        if (hidden) {
+          parent.scrollTop =
+            parent.scrollTop + (offset - scrollHeight + height);
+        }
+        if (newActive === 0) {
+          parent.scrollTop = 0;
+        }
+      }
     }
+    // press down
     if (e.which === 38) {
-      setActive(active > 0 ? active - 1 : selectable.length - 1);
+      const newActive = active > 0 ? active - 1 : selectable.length - 1;
+      setActive(newActive);
+      if (optionsRef.current && itemRef.current) {
+        const ir = itemRef.current;
+        const parent = ir.offsetParent;
+        const {
+          top: parentTop,
+          height: scrollHeight,
+        } = parent.getBoundingClientRect();
+        const { height, top, bottom } = ir.getBoundingClientRect();
+        const offset = top - parentTop;
+        if (top - height < parent.scrollTop) {
+          parent.scrollTop = parent.scrollTop - height;
+        }
+        if (newActive === 0) {
+          console.log(top);
+          parent.scrollTop = 0;
+        }
+        if (newActive === selectable.length - 1) {
+          parent.scrollTop = offset;
+        }
+      }
     }
     if (e.which === 13) {
       if (active >= 0 && selectable[active]) {
@@ -136,7 +182,7 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
               <Input
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
-                placeholder="Select varieties..."
+                placeholder="Select..."
                 type="text"
                 value={input}
                 onFocus={() => toggle(true)}
@@ -160,11 +206,12 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
           </Flex>
         </Flex>
         <OptionsWrapper>
-          <Options active={show}>
+          <Options active={show} ref={optionsRef}>
             {selectable.map((x, i) => (
               <Item
                 onMouseOver={() => setActive(i)}
                 active={active === i}
+                ref={active === i ? itemRef : null}
                 key={x.value}
                 onClick={() => addItem(x)}
               >

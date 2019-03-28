@@ -8,12 +8,12 @@ interface Option {
 }
 
 const items: Option[] = [
+  { value: "1", label: "one" },
   { value: "2", label: "two" },
   { value: "3", label: "three" },
-  { value: "6", label: "six" },
   { value: "4", label: "four" },
-  { value: "1", label: "one" },
   { value: "5", label: "five" },
+  { value: "6", label: "six" },
 ];
 
 const IndexPage: React.SFC<{}> = props => {
