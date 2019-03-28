@@ -49,8 +49,13 @@ const InputContainer = styled.div<{ active: boolean }>`
     `};
 `;
 
-const ExpandIcon = styled(ExpandMore)``;
-const CloseIcon = styled(Close)``;
+const ExpandIcon = styled(ExpandMore)`
+  cursor: pointer;
+`;
+
+const CloseIcon = styled(Close)`
+  cursor: pointer;
+`;
 const CancelIcon = styled(Cancel)`
   cursor: pointer;
 `;
@@ -68,7 +73,6 @@ const OptionsWrapper = styled.div`
 
 const Options = styled.div<{ active: boolean }>`
   z-index: 99;
-  max-height: 100px;
   display: ${props => (props.active ? "block" : "none")};
   overflow: auto;
   width: 100%;
@@ -208,7 +212,7 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
               />
               {selected.length > 0 && (
                 <Flex alignItems="center" px={2} onClick={reset}>
-                  <Close color="inherit" size={18} />
+                  <CloseIcon color="inherit" size={18} />
                 </Flex>
               )}
               <Flex alignItems="center" px={2} onClick={toggleExpand}>
