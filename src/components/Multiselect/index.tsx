@@ -1,16 +1,12 @@
 import * as React from "react";
-import { css, styled, Flex } from "primithemes";
+import { css, styled, Text, Flex } from "primithemes";
+import { ExpandMore } from "styled-icons/material/ExpandMore";
+import { Close } from "styled-icons/material/Close";
+import { Cancel } from "styled-icons/material/Cancel";
 
 const InputWrapper = styled.div<{ active: boolean }>`
   width: 100%;
-  border: 1px solid ${props => props.theme.colors.grey[100]};
-  border-radius: ${props => props.theme.radii[2]};
-  overflow: hidden;
-  ${props =>
-    props.active &&
-    css`
-      border-color: ${props => props.theme.colors.grey[300]};
-    `};
+  font-family: ${props => props.theme.fonts.sans};
 `;
 
 const Item = styled.div<{ active: boolean }>`
@@ -29,26 +25,56 @@ const Item = styled.div<{ active: boolean }>`
 const Input = styled.input`
   -webkit-appearance: none;
   padding: ${props => props.theme.sizes[2]};
+  background: transparent;
   border: none;
+  font-family: ${props => props.theme.fonts.sans};
   &: focus {
     outline: none;
   }
   min-width: 5px;
-  flex: 1 1 50%;
+  width: 100%;
+  flex: 1 1 auto;
+`;
+
+const InputContainer = styled.div<{ active: boolean }>`
+  display: flex;
+  transition: all 400ms ease-out;
+  width: 100%;
+  border-bottom: ${props => props.theme.borders[1]};
+  border-color: ${props => props.theme.colors.grey[300]};
+  ${props =>
+    props.active &&
+    css`
+      border-color: ${props => props.theme.colors.secondary.main};
+    `};
+`;
+
+const ExpandIcon = styled(ExpandMore)``;
+const CloseIcon = styled(Close)``;
+const CancelIcon = styled(Cancel)`
+  cursor: pointer;
 `;
 
 const Selected = styled.span`
   padding: ${props => props.theme.sizes[1]} ${props => props.theme.sizes[2]};
-  background: ${props => props.theme.colors.grey[100]};
-  cursor: pointer;
+  background: ${props => props.theme.colors.grey[200]};
   margin: ${props => props.theme.sizes[1]};
+  border-radius: ${props => props.theme.radii[2]};
+`;
+
+const OptionsWrapper = styled.div`
+  position: relative;
 `;
 
 const Options = styled.div<{ active: boolean }>`
+  z-index: 99;
+  max-height: 100px;
   display: ${props => (props.active ? "block" : "none")};
-  border-top: 1px solid ${props => props.theme.colors.grey[400]};
-  max-height: 250px;
   overflow: auto;
+  width: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 `;
 
 const ascending = (a: any, b: any) => {
@@ -68,12 +94,14 @@ interface Option {
 
 interface Props {
   items: Option[];
+  selected: Option[];
+  setSelected: any;
 }
-const Multiselect: React.SFC<Props> = ({ items }) => {
+const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
   const ref = React.useRef(null);
+  const inputRef = React.useRef(null);
   const [selectable, setSelectable] = React.useState(items);
   const [show, toggle] = React.useState(false);
-  const [selected, setSelected] = React.useState([] as Option[]);
   const [input, setInput] = React.useState("");
   const [active, setActive] = React.useState(0);
 
@@ -123,6 +151,15 @@ const Multiselect: React.SFC<Props> = ({ items }) => {
     toggle(false);
   };
 
+  const toggleExpand = () => {
+    if (show) {
+      toggle(false);
+    } else {
+      toggle(true);
+      inputRef.current && inputRef.current.focus();
+    }
+  };
+
   const handleKeyPress = (e: any) => {
     if (e.which === 40) {
       setActive(active < selectable.length - 1 ? active + 1 : 0);
@@ -150,40 +187,56 @@ const Multiselect: React.SFC<Props> = ({ items }) => {
     <div ref={ref}>
       <InputWrapper active={show}>
         <Flex flexDirection="row">
-          <Flex p={2} flexWrap="wrap" style={{ flex: "1 1 auto" }}>
+          <Flex flexWrap="wrap" style={{ flex: "1 1 auto" }}>
             {selected.map(x => (
-              <Selected key={x.value} onClick={() => removeItem(x)}>
-                {x.label}
+              <Selected key={x.value}>
+                <Flex alignItems="center">
+                  <CancelIcon size={16} onClick={() => removeItem(x)} />
+                  <Text ml={2}>{x.label}</Text>
+                </Flex>
               </Selected>
             ))}
-            <Input
-              onChange={handleChange}
-              onKeyDown={handleKeyPress}
-              placeholder="Select variety"
-              type="text"
-              value={input}
-              onFocus={() => toggle(true)}
-            />
-          </Flex>
-          <Flex alignItems="center" px={2} onClick={reset}>
-            x
-          </Flex>
-          <Flex alignItems="center" px={2} onClick={() => toggle(!show)}>
-            v
+            <InputContainer active={show}>
+              <Input
+                onChange={handleChange}
+                onKeyDown={handleKeyPress}
+                placeholder="Select varieties..."
+                type="text"
+                value={input}
+                onFocus={() => toggle(true)}
+                ref={inputRef}
+              />
+              {selected.length > 0 && (
+                <Flex alignItems="center" px={2} onClick={reset}>
+                  <Close color="inherit" size={18} />
+                </Flex>
+              )}
+              <Flex alignItems="center" px={2} onClick={toggleExpand}>
+                <ExpandIcon
+                  style={{
+                    transform: show ? "rotate(180deg)" : "rotate(0deg)",
+                  }}
+                  color="inherit"
+                  size={18}
+                />
+              </Flex>
+            </InputContainer>
           </Flex>
         </Flex>
-        <Options active={show}>
-          {selectable.map((x, i) => (
-            <Item
-              onMouseOver={() => setActive(i)}
-              active={active === i}
-              key={x.value}
-              onClick={() => addItem(x)}
-            >
-              {x.label}
-            </Item>
-          ))}
-        </Options>
+        <OptionsWrapper>
+          <Options active={show}>
+            {selectable.map((x, i) => (
+              <Item
+                onMouseOver={() => setActive(i)}
+                active={active === i}
+                key={x.value}
+                onClick={() => addItem(x)}
+              >
+                {x.label}
+              </Item>
+            ))}
+          </Options>
+        </OptionsWrapper>
       </InputWrapper>
     </div>
   );
