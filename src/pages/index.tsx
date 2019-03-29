@@ -23,7 +23,7 @@ const IndexPage: React.SFC<{}> = props => {
       <Multiselect
         selected={selected}
         setSelected={setSelected}
-        maxHeight="200px"
+        maxHeight="150px"
         items={items}
       />
     </Layout>

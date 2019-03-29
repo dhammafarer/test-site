@@ -8,10 +8,15 @@ export const Wrapper = styled.div`
   font-family: ${props => props.theme.fonts.sans};
   display: flex;
   align-items: flex-start;
+  border: 1px solid;
+  border-color: ${props => props.theme.colors.grey[100]};
+  padding: ${props => props.theme.sizes[2]};
+  border-radius: ${props => props.theme.radii[2]};
 `;
 
 export const Buttons = styled.div`
   display: flex;
+  margin-left: ${props => props.theme.sizes[1]};
 `;
 
 export const Controls = styled.div`
