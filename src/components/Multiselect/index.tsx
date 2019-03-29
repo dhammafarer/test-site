@@ -4,8 +4,12 @@ import { Text, Flex } from "primithemes";
 import {
   Options,
   Selected,
-  InputWrapper,
+  Buttons,
+  Wrapper,
+  Controls,
+  Select,
   InputContainer,
+  SelectedContainer,
   CloseIcon,
   CancelIcon,
   ExpandIcon,
@@ -188,10 +192,10 @@ const Multiselect: React.SFC<Props> = ({
   };
 
   return (
-    <div ref={ref}>
-      <InputWrapper active={show}>
-        <Flex flexDirection="row">
-          <Flex flexWrap="wrap" style={{ flex: "1 1 auto" }}>
+    <Wrapper ref={ref}>
+      <Controls>
+        <Select active={show}>
+          <SelectedContainer>
             {selected.map(x => (
               <Selected key={x.value}>
                 <Flex alignItems="center">
@@ -200,33 +204,19 @@ const Multiselect: React.SFC<Props> = ({
                 </Flex>
               </Selected>
             ))}
-            <InputContainer active={show}>
-              <Input
-                onChange={handleChange}
-                onKeyDown={handleKeyPress}
-                placeholder={props.placeholder || "Search..."}
-                type="text"
-                value={input}
-                onFocus={() => toggle(true)}
-                ref={inputRef}
-              />
-              {selected.length > 0 && (
-                <Flex alignItems="center" px={2} onClick={reset}>
-                  <CloseIcon color="inherit" size={18} />
-                </Flex>
-              )}
-              <Flex alignItems="center" px={2} onClick={toggleExpand}>
-                <ExpandIcon
-                  style={{
-                    transform: show ? "rotate(180deg)" : "rotate(0deg)",
-                  }}
-                  color="inherit"
-                  size={18}
-                />
-              </Flex>
-            </InputContainer>
-          </Flex>
-        </Flex>
+          </SelectedContainer>
+          <InputContainer active={show}>
+            <Input
+              onChange={handleChange}
+              onKeyDown={handleKeyPress}
+              placeholder={props.placeholder || "Search..."}
+              type="text"
+              value={input}
+              onFocus={() => toggle(true)}
+              ref={inputRef}
+            />
+          </InputContainer>
+        </Select>
         <OptionsWrapper>
           <Options
             maxHeight={props.maxHeight || "300px"}
@@ -245,8 +235,24 @@ const Multiselect: React.SFC<Props> = ({
             ))}
           </Options>
         </OptionsWrapper>
-      </InputWrapper>
-    </div>
+      </Controls>
+      <Buttons>
+        {selected.length > 0 && (
+          <Flex alignItems="center" onClick={reset}>
+            <CloseIcon color="inherit" size={18} />
+          </Flex>
+        )}
+        <Flex alignItems="center" onClick={toggleExpand}>
+          <ExpandIcon
+            style={{
+              transform: show ? "rotate(180deg)" : "rotate(0deg)",
+            }}
+            color="inherit"
+            size={18}
+          />
+        </Flex>
+      </Buttons>
+    </Wrapper>
   );
 };
 

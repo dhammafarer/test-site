@@ -3,45 +3,26 @@ import { ExpandMore } from "styled-icons/material/ExpandMore";
 import { Close } from "styled-icons/material/Close";
 import { Cancel } from "styled-icons/material/Cancel";
 
-export const InputWrapper = styled.div<{ active: boolean }>`
+export const Wrapper = styled.div`
   width: 100%;
   font-family: ${props => props.theme.fonts.sans};
+  display: flex;
+  align-items: flex-start;
 `;
 
-export const Item = styled.div<{ active: boolean }>`
-  padding: ${props => props.theme.sizes[2]};
-  cursor: pointer;
-  color: ${props => props.theme.colors.text.main};
-  background: ${props => props.theme.colors.white.main};
-  ${props =>
-    props.active &&
-    css`
-      background: ${props => props.theme.colors.grey[200]};
-      color: ${props => props.theme.colors.text.dark};
-    `};
+export const Buttons = styled.div`
+  display: flex;
 `;
 
-export const Input = styled.input`
-  -webkit-appearance: none;
-  padding: ${props => props.theme.sizes[2]};
-  background: transparent;
-  border: none;
-  font-family: ${props => props.theme.fonts.sans};
-  &:focus {
-    outline: none;
-  }
-  &:active {
-    border: none;
-  }
-  min-width: 5px;
-  width: 100%;
+export const Controls = styled.div`
   flex: 1 1 auto;
 `;
 
-export const InputContainer = styled.div<{ active: boolean }>`
+export const Select = styled.div<{ active: boolean }>`
   display: flex;
+  flex: 1 1 auto;
+  flex-wrap: wrap;
   transition: all 400ms ease-out;
-  width: 100%;
   border-bottom: ${props => props.theme.borders[1]};
   border-color: ${props => props.theme.colors.grey[300]};
   ${props =>
@@ -51,12 +32,39 @@ export const InputContainer = styled.div<{ active: boolean }>`
     `};
 `;
 
+export const SelectedContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+export const InputContainer = styled.div<{ active: boolean }>`
+  flex: 1 1 0;
+`;
+
+export const Input = styled.input`
+  -webkit-appearance: none;
+  box-sizing: border-box;
+  padding: ${props => props.theme.sizes[2]};
+  border: none;
+  font-family: ${props => props.theme.fonts.sans};
+  &:focus {
+    outline: none;
+  }
+  &:active {
+    border: none;
+  }
+  min-width: 25px;
+  width: 100%;
+`;
+
 export const ExpandIcon = styled(ExpandMore)`
   cursor: pointer;
+  padding: ${props => props.theme.sizes[2]};
 `;
 
 export const CloseIcon = styled(Close)`
   cursor: pointer;
+  padding: ${props => props.theme.sizes[2]};
 `;
 export const CancelIcon = styled(Cancel)`
   cursor: pointer;
@@ -82,4 +90,17 @@ export const Options = styled.div<{ active: boolean; maxHeight: string }>`
   position: absolute;
   top: 0;
   left: 0;
+`;
+
+export const Item = styled.div<{ active: boolean }>`
+  padding: ${props => props.theme.sizes[2]};
+  cursor: pointer;
+  color: ${props => props.theme.colors.text.main};
+  background: ${props => props.theme.colors.white.main};
+  ${props =>
+    props.active &&
+    css`
+      background: ${props => props.theme.colors.grey[200]};
+      color: ${props => props.theme.colors.text.dark};
+    `};
 `;
