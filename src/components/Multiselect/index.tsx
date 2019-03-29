@@ -65,7 +65,6 @@ const Multiselect: React.SFC<Props> = ({
   const [scrollTo, setScrollTo] = React.useState(0);
 
   React.useEffect(() => {
-    console.log("sorting");
     const ops = items.map((x, i) => {
       return Object.assign({ index: i }, x);
     });

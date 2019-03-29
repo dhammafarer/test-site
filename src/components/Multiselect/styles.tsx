@@ -53,7 +53,7 @@ export const Input = styled.input`
   &:active {
     border: none;
   }
-  min-width: 25px;
+  min-width: 45px;
   width: 100%;
 `;
 
@@ -90,6 +90,11 @@ export const Options = styled.div<{ active: boolean; maxHeight: string }>`
   position: absolute;
   top: 0;
   left: 0;
+  border: 1px solid;
+  border-color: ${props => props.theme.colors.grey[100]};
+  border-bottom-left-radius: ${props => props.theme.radii[2]};
+  border-bottom-right-radius: ${props => props.theme.radii[2]};
+  box-shadow: ${props => props.theme.shadows[1]};
 `;
 
 export const Item = styled.div<{ active: boolean }>`
