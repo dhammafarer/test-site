@@ -42,12 +42,13 @@ interface Props {
   selected: Option[];
   setSelected: any;
   placeholder?: string;
+  maxHeight?: string;
 }
 const Multiselect: React.SFC<Props> = ({
   items,
   selected,
   setSelected,
-  placeholder,
+  ...props
 }) => {
   const ref = React.useRef(null as (HTMLDivElement | null));
   const inputRef = React.useRef(null as (HTMLInputElement | null));
@@ -203,7 +204,7 @@ const Multiselect: React.SFC<Props> = ({
               <Input
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
-                placeholder={placeholder || "Search..."}
+                placeholder={props.placeholder || "Search..."}
                 type="text"
                 value={input}
                 onFocus={() => toggle(true)}
@@ -227,7 +228,11 @@ const Multiselect: React.SFC<Props> = ({
           </Flex>
         </Flex>
         <OptionsWrapper>
-          <Options active={show} ref={optionsRef}>
+          <Options
+            maxHeight={props.maxHeight || "300px"}
+            active={show}
+            ref={optionsRef}
+          >
             {selectable.map((x, i) => (
               <Item
                 onMouseOver={() => setActive(i)}

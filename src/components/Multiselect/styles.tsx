@@ -27,8 +27,11 @@ export const Input = styled.input`
   background: transparent;
   border: none;
   font-family: ${props => props.theme.fonts.sans};
-  &: focus {
+  &:focus {
     outline: none;
+  }
+  &:active {
+    border: none;
   }
   min-width: 5px;
   width: 100%;
@@ -70,8 +73,8 @@ export const OptionsWrapper = styled.div`
   position: relative;
 `;
 
-export const Options = styled.div<{ active: boolean }>`
-  max-height: 100px;
+export const Options = styled.div<{ active: boolean; maxHeight: string }>`
+  max-height: ${props => props.maxHeight};
   z-index: 99;
   display: ${props => (props.active ? "block" : "none")};
   overflow: auto;
