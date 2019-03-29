@@ -101,11 +101,12 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
 
   const filterInput = (val: string) => {
     setInput(val);
-    if (val.trim().length === 0) {
-      setSelectable(items.filter(x => selected.indexOf(x) < 0));
-    } else {
-      setSelectable(selectable.filter(x => x.label.indexOf(val) >= 0));
-    }
+    const s = val.trim();
+    setSelectable(
+      items
+        .filter(x => selected.indexOf(x) < 0)
+        .filter(x => x.label.indexOf(s) >= 0)
+    );
   };
 
   const handleChange = (e: any) => {
