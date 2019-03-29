@@ -59,6 +59,11 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
   const updateScroll = () => {
     const parent = optionsRef.current;
     if (isNil(scrollTo) || !parent) return;
+    setActive(scrollTo);
+    if (scrollTo === 0) {
+      parent.scrollTop = 0;
+      return;
+    }
     const ir = parent.children[scrollTo];
     const {
       top: parentTop,
@@ -66,28 +71,27 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
     } = parent.getBoundingClientRect();
     const { top, height } = ir.getBoundingClientRect();
     const offset = top - parentTop;
-    console.log("***");
-    console.log("offset :", offset);
-    console.log(ir);
-    console.log("scrollTo: ", scrollTo);
-    console.log("***");
-    const hidden = offset + height >= scrollHeight;
-    if (hidden) {
+    const hiddenBelow = offset + height >= scrollHeight;
+    const hiddenAbove = offset < 0;
+    if (hiddenBelow) {
       parent.scrollTop = parent.scrollTop + (offset - scrollHeight + height);
+    } else if (hiddenAbove) {
+      parent.scrollTop = parent.scrollTop + offset;
     }
-    if (scrollTo === 0) {
-      parent.scrollTop = 0;
-    }
-    setActive(scrollTo);
   };
+
   React.useEffect(() => updateScroll(), [scrollTo]);
+
+  const resetInput = () => {
+    setInput("");
+    setScrollTo(active - 1 < 0 ? 0 : active - 1);
+    toggle(false);
+  };
 
   const addItem = (item: Option) => {
     setSelected([...selected, item]);
     setSelectable(items.filter(x => selected.indexOf(x) < 0 && x !== item));
-    setInput("");
-    toggle(false);
-    setActive(0);
+    resetInput();
   };
 
   const removeItem = (item: Option) => {
