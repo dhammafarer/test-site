@@ -1,4 +1,5 @@
 import * as React from "react";
+import { isNil } from "ramda";
 import { Text, Flex } from "primithemes";
 import {
   Options,
@@ -34,14 +35,14 @@ interface Props {
   setSelected: any;
 }
 const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
-  const ref = React.useRef(null);
-  const inputRef = React.useRef(null);
-  const optionsRef = React.useRef(null);
-  const itemRef = React.useRef(null);
+  const ref = React.useRef(null as (HTMLDivElement | null));
+  const inputRef = React.useRef(null as (HTMLInputElement | null));
+  const optionsRef = React.useRef(null as (HTMLDivElement | null));
   const [selectable, setSelectable] = React.useState(items);
   const [show, toggle] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [active, setActive] = React.useState(0);
+  const [scrollTo, setScrollTo] = React.useState(0);
 
   const clickOutside = (e: any) => {
     if (!show) return;
@@ -54,6 +55,32 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
   React.useEffect(() => {
     document.addEventListener("click", clickOutside);
   }, [show]);
+
+  const updateScroll = () => {
+    const parent = optionsRef.current;
+    if (isNil(scrollTo) || !parent) return;
+    const ir = parent.children[scrollTo];
+    const {
+      top: parentTop,
+      height: scrollHeight,
+    } = parent.getBoundingClientRect();
+    const { top, height } = ir.getBoundingClientRect();
+    const offset = top - parentTop;
+    console.log("***");
+    console.log("offset :", offset);
+    console.log(ir);
+    console.log("scrollTo: ", scrollTo);
+    console.log("***");
+    const hidden = offset + height >= scrollHeight;
+    if (hidden) {
+      parent.scrollTop = parent.scrollTop + (offset - scrollHeight + height);
+    }
+    if (scrollTo === 0) {
+      parent.scrollTop = 0;
+    }
+    setActive(scrollTo);
+  };
+  React.useEffect(() => updateScroll(), [scrollTo]);
 
   const addItem = (item: Option) => {
     setSelected([...selected, item]);
@@ -99,55 +126,14 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
   };
 
   const handleKeyPress = (e: any) => {
-    // press up
     if (e.which === 40) {
       const newActive = active < selectable.length - 1 ? active + 1 : 0;
-      setActive(newActive);
-      if (optionsRef.current && itemRef.current) {
-        const ir = itemRef.current;
-        const parent = ir.offsetParent;
-        const {
-          top: parentTop,
-          height: scrollHeight,
-        } = parent.getBoundingClientRect();
-        const { top, height } = ir.getBoundingClientRect();
-        const offset = top - parentTop + height;
-        console.log("***");
-        console.log("offset :", offset);
-        const hidden = offset + height >= scrollHeight;
-        if (hidden) {
-          parent.scrollTop =
-            parent.scrollTop + (offset - scrollHeight + height);
-        }
-        if (newActive === 0) {
-          parent.scrollTop = 0;
-        }
-      }
+      setScrollTo(newActive);
     }
     // press down
     if (e.which === 38) {
       const newActive = active > 0 ? active - 1 : selectable.length - 1;
-      setActive(newActive);
-      if (optionsRef.current && itemRef.current) {
-        const ir = itemRef.current;
-        const parent = ir.offsetParent;
-        const {
-          top: parentTop,
-          height: scrollHeight,
-        } = parent.getBoundingClientRect();
-        const { height, top, bottom } = ir.getBoundingClientRect();
-        const offset = top - parentTop;
-        if (top - height < parent.scrollTop) {
-          parent.scrollTop = parent.scrollTop - height;
-        }
-        if (newActive === 0) {
-          console.log(top);
-          parent.scrollTop = 0;
-        }
-        if (newActive === selectable.length - 1) {
-          parent.scrollTop = offset;
-        }
-      }
+      setScrollTo(newActive);
     }
     if (e.which === 13) {
       if (active >= 0 && selectable[active]) {
@@ -211,7 +197,6 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
               <Item
                 onMouseOver={() => setActive(i)}
                 active={active === i}
-                ref={active === i ? itemRef : null}
                 key={x.value}
                 onClick={() => addItem(x)}
               >
