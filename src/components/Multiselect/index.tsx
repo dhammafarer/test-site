@@ -24,25 +24,49 @@ const ascending = (a: any, b: any) => {
   return 0;
 };
 
+const sortFn = (a: Option, b: Option) => {
+  const af = a.index;
+  const bf = b.index;
+  if (!af || !bf) return 0;
+  return ascending(af, bf);
+};
+
 interface Option {
   value: string;
   label: string;
+  index?: number;
 }
 
 interface Props {
   items: Option[];
   selected: Option[];
   setSelected: any;
+  placeholder?: string;
 }
-const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
+const Multiselect: React.SFC<Props> = ({
+  items,
+  selected,
+  setSelected,
+  placeholder,
+}) => {
   const ref = React.useRef(null as (HTMLDivElement | null));
   const inputRef = React.useRef(null as (HTMLInputElement | null));
   const optionsRef = React.useRef(null as (HTMLDivElement | null));
-  const [selectable, setSelectable] = React.useState(items);
+  const [options, setOptions] = React.useState([] as Option[]);
+  const [selectable, setSelectable] = React.useState([] as Option[]);
   const [show, toggle] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [active, setActive] = React.useState(0);
   const [scrollTo, setScrollTo] = React.useState(0);
+
+  React.useEffect(() => {
+    console.log("sorting");
+    const ops = items.map((x, i) => {
+      return Object.assign({ index: i }, x);
+    });
+    setOptions(ops);
+    setSelectable(ops);
+  }, [items]);
 
   const clickOutside = (e: any) => {
     if (!show) return;
@@ -82,6 +106,10 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
 
   React.useEffect(() => updateScroll(), [scrollTo]);
 
+  const updateSelectable = (xs: Option[]) => {
+    setSelectable(xs);
+  };
+
   const resetInput = () => {
     setInput("");
     setScrollTo(active - 1 < 0 ? 0 : active - 1);
@@ -90,20 +118,22 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
 
   const addItem = (item: Option) => {
     setSelected([...selected, item]);
-    setSelectable(items.filter(x => selected.indexOf(x) < 0 && x !== item));
+    updateSelectable(
+      options.filter(x => selected.indexOf(x) < 0 && x !== item)
+    );
     resetInput();
   };
 
   const removeItem = (item: Option) => {
-    setSelectable([...selectable, item].sort(ascending));
+    updateSelectable([...selectable, item].sort(sortFn));
     setSelected(selected.filter(x => x !== item));
   };
 
   const filterInput = (val: string) => {
     setInput(val);
     const s = val.trim();
-    setSelectable(
-      items
+    updateSelectable(
+      options
         .filter(x => selected.indexOf(x) < 0)
         .filter(x => x.label.indexOf(s) >= 0)
     );
@@ -116,7 +146,7 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
 
   const reset = () => {
     setSelected([]);
-    setSelectable(items.sort(ascending));
+    updateSelectable(options);
     setInput("");
     toggle(false);
   };
@@ -173,7 +203,7 @@ const Multiselect: React.SFC<Props> = ({ items, selected, setSelected }) => {
               <Input
                 onChange={handleChange}
                 onKeyDown={handleKeyPress}
-                placeholder="Select..."
+                placeholder={placeholder || "Search..."}
                 type="text"
                 value={input}
                 onFocus={() => toggle(true)}
