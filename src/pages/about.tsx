@@ -1,6 +1,5 @@
 import * as React from "react";
 import { useStateValue } from "src/context/StateContext";
-import { Link } from "gatsby";
 
 const Button: React.SFC<{}> = () => {
   const [, dispatch] = useStateValue();
@@ -31,7 +30,6 @@ const Items: React.SFC<{}> = () => {
 const IndexPage: React.SFC<{}> = props => {
   return (
     <div>
-      <Link to="/about">About</Link>
       <Items />
       <Button />
     </div>

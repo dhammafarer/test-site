@@ -44,6 +44,9 @@ const reducer = (state: State, action: any) => {
 
 export const StateProvider: React.SFC<{}> = ({ children }) => {
   const value = useReducer(reducer, initialState);
+  React.useEffect(() => {
+    value[1]({ type: "fetchState" });
+  }, []);
 
   return (
     <StateContext.Provider value={value}>{children}</StateContext.Provider>
