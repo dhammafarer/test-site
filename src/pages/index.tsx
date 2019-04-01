@@ -26,6 +26,16 @@ const IndexPage: React.SFC<{}> = props => {
         maxHeight="150px"
         items={items}
       />
+      <form name="contact" data-netllify="true" method="POST">
+        <input type="hidden" name="form-name" value="contact" />
+        <fieldset>
+          <label>name</label>
+          <input type="text" name="name" />
+        </fieldset>
+        <div>
+          <button type="submit">Submit</button>
+        </div>
+      </form>
     </Layout>
   );
 };
