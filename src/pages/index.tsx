@@ -1,41 +1,42 @@
 import * as React from "react";
 import { Layout } from "src/components/Layout";
-import { Multiselect } from "src/components/Multiselect";
+import { useStateValue, StateProvider } from "src/context/StateContext";
 
-interface Option {
-  value: string;
-  label: string;
-}
+const Button: React.SFC<{}> = () => {
+  const [, dispatch] = useStateValue();
+  return (
+    <div>
+      <button onClick={() => dispatch({ type: "addItem", item: "new" })}>
+        add
+      </button>
+      <button onClick={() => dispatch({ type: "reset" })}>reset</button>
+    </div>
+  );
+};
 
-const items: Option[] = [
-  { value: "1", label: "one" },
-  { value: "2", label: "two" },
-  { value: "3", label: "three" },
-  { value: "4", label: "four" },
-  { value: "5", label: "five" },
-  { value: "6", label: "six" },
-];
+const Items: React.SFC<{}> = () => {
+  const [state, dispatch] = useStateValue();
+  React.useEffect(() => {
+    dispatch({ type: "fetchState" });
+  }, []);
+  return (
+    <div>
+      {state.wines.map((x, i) => (
+        <div key={i}>{x}</div>
+      ))}
+    </div>
+  );
+};
 
 const IndexPage: React.SFC<{}> = props => {
-  const [selected, setSelected] = React.useState([]);
   return (
     <Layout>
-      <Multiselect
-        selected={selected}
-        setSelected={setSelected}
-        maxHeight="150px"
-        items={items}
-      />
-      <form name="contact" data-netllify="true" method="POST">
-        <input type="hidden" name="form-name" value="contact" />
-        <fieldset>
-          <label>name</label>
-          <input type="text" name="name" />
-        </fieldset>
+      <StateProvider>
         <div>
-          <button type="submit">Submit</button>
+          <Items />
+          <Button />
         </div>
-      </form>
+      </StateProvider>
     </Layout>
   );
 };
