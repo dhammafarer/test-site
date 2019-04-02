@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Button, Box, Card } from "primithemes";
 import { Input } from "./Input";
-import { isRequired } from "./validations";
+import { isRequired, isAdult } from "./validations";
 
 type Validator = (value: string) => string[];
 
@@ -10,7 +10,7 @@ const Form: React.SFC<{}> = props => {
     name: "",
     birthdate: "",
   });
-  const validators = { name: [isRequired], birthdate: [isRequired] };
+  const validators = { name: [isRequired], birthdate: [isRequired, isAdult] };
 
   const [errors, setErrors] = React.useState({ name: [], birthdate: [] });
 
