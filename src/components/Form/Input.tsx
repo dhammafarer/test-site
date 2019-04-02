@@ -8,14 +8,15 @@ interface Props {
   type: "text" | "number" | "date";
   value: string;
   required?: boolean;
-  invalid?: boolean;
+  errors?: string[];
   placeholder?: string;
   handleChange: any;
+  handleBlur?: any;
   min?: any;
   max?: any;
 }
 
-const input = css`
+const input = css<{ errors?: string[] }>`
   display: block;
   border: ${props => props.theme.borders[1]};
   font-family: ${props => props.theme.fonts.sans};
@@ -28,6 +29,15 @@ const input = css`
     border-color: ${props => props.theme.colors.primary.main};
     outline: none;
   }
+  ${props =>
+    props.errors &&
+    props.errors.length > 0 &&
+    css`
+      border-color: ${props => props.theme.colors.error.main};
+      &:focus {
+        border-color: ${props => props.theme.colors.error.main};
+      }
+    `};
 `;
 
 const StyledInput = styled.input`
@@ -37,15 +47,20 @@ const StyledInput = styled.input`
   max-width: 100%;
 `;
 
-const Input: React.SFC<Props> = props => {
+const Input: React.SFC<Props> = ({ errors, ...props }) => {
   return (
     <Box>
       <Label htmlFor={props.name}>
-        <span>{props.title}</span>
+        {errors && errors.length > 0 ? (
+          errors.map(err => <span>{err}</span>)
+        ) : (
+          <span>{props.title}</span>
+        )}
         {props.required && <Required>*</Required>}
       </Label>
       <StyledInput
         id={props.name}
+        errors={errors}
         name={props.name}
         type={props.type}
         value={props.value}
@@ -53,6 +68,7 @@ const Input: React.SFC<Props> = props => {
         placeholder={props.placeholder}
         min={props.min}
         max={props.max}
+        onBlur={props.handleBlur}
       />
     </Box>
   );
