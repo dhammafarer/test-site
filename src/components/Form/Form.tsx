@@ -8,23 +8,18 @@ type Validator = (value: string) => string;
 type Values = { [key: string]: string };
 type Errors = { [key: string]: React.ReactNode[] };
 
-const Form: React.SFC<{}> = props => {
-  const fields = {
-    name: {
-      value: "",
-      validators: [isRequired],
-    },
-    birthdate: {
-      value: "",
-      validators: [isRequired, isAdult],
-    },
+interface Fields {
+  [key: string]: {
+    value: string;
+    validators: Validator[];
   };
+}
 
-  const messages = {
-    isRequired: <span> is required.</span>,
-    isAdult: <span> is invalid.</span>,
-  };
+interface Messages {
+  [key: string]: React.ReactNode;
+}
 
+const useFormValidation = (fields: Fields, messages: Messages) => {
   const [values, setValues] = React.useState(
     Object.keys(fields).reduce(
       (a, b) => ({ ...a, [b]: fields[b].value }),
@@ -76,7 +71,7 @@ const Form: React.SFC<{}> = props => {
       (a, b) => {
         const errs = validate(values[b], b);
         if (errs.length < 1) return [true, a[1]];
-        return [false, Object.assign({}, a[0], { [b]: errs })];
+        return [false, Object.assign({}, a[1], { [b]: errs })];
       },
       [false, {}]
     );
@@ -86,9 +81,45 @@ const Form: React.SFC<{}> = props => {
     const [valid, errs] = validateForm();
     if (!valid) {
       e.preventDefault();
+      console.log(errs);
       setErrors(errs);
     }
   };
+
+  return {
+    values,
+    setValues,
+    errors,
+    setErrors,
+    handleBlur,
+    handleSubmit,
+    updateValue,
+  };
+};
+
+const Form: React.SFC<{}> = props => {
+  const fields = {
+    name: {
+      value: "",
+      validators: [isRequired],
+    },
+    birthdate: {
+      value: "",
+      validators: [isRequired, isAdult],
+    },
+  };
+  const messages = {
+    isRequired: <span> is required.</span>,
+    isAdult: <span> is invalid.</span>,
+  };
+
+  const {
+    values,
+    errors,
+    handleBlur,
+    handleSubmit,
+    updateValue,
+  } = useFormValidation(fields, messages);
 
   return (
     <Box p={3}>
