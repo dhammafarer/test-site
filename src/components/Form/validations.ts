@@ -1,12 +1,12 @@
 //const capitalize = (s: string) => s[0].toUpperCase() + s.slice(1);
 
 export const isRequired = (value: string) => {
-  const message = ` is required.`;
+  const message = `isRequired`;
   return value.trim().length < 1 ? message : "";
 };
 
 export const isAdult = (value: string) => {
-  const message = ` is invalid.`;
+  const message = `isAdult`;
   const age = 18;
   const current = new Date().valueOf();
   const dob = new Date(value);

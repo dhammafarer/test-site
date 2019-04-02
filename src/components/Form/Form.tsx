@@ -3,7 +3,7 @@ import { Button, Box, Card } from "primithemes";
 import { Input } from "./Input";
 import { isRequired, isAdult } from "./validations";
 
-type Validator = (value: string) => string[];
+type Validator = (value: string) => string;
 
 const Form: React.SFC<{}> = props => {
   const [values, setValues] = React.useState({
@@ -11,6 +11,10 @@ const Form: React.SFC<{}> = props => {
     birthdate: "",
   });
   const validators = { name: [isRequired], birthdate: [isRequired, isAdult] };
+  const messages = {
+    isRequired: <span> is required.</span>,
+    isAdult: <span> is invalid.</span>,
+  };
 
   const [errors, setErrors] = React.useState({ name: [], birthdate: [] });
 
@@ -23,15 +27,24 @@ const Form: React.SFC<{}> = props => {
     setValues(newState);
   };
 
-  const validate = (e: React.FormEvent<HTMLInputElement>) => {
+  const validate = (value: string, name: string) => {
+    const valFns = validators[name] as Validator[];
+    if (!valFns) return;
+    const errs = valFns.reduce(
+      (a, b) => {
+        const err = b(value);
+        if (err) a.push(messages[err] as string);
+        return a;
+      },
+      [] as string[]
+    );
+    setErrors(Object.assign({}, { ...errors, [name]: errs }));
+  };
+
+  const handleBlur = (e: React.FormEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     const name = e.currentTarget.name;
-    const valFns = validators[name];
-    if (!valFns) return;
-    const errs = valFns
-      .map((x: Validator) => x(value))
-      .filter((x: string) => x !== "");
-    setErrors(Object.assign({}, { ...errors, [name]: errs }));
+    validate(value, name);
   };
 
   const validateAll = () => {
@@ -64,7 +77,7 @@ const Form: React.SFC<{}> = props => {
               errors={errors.name}
               value={values.name}
               handleChange={updateValue}
-              handleBlur={validate}
+              handleBlur={handleBlur}
             />
           </Box>
           <Box>
@@ -76,7 +89,7 @@ const Form: React.SFC<{}> = props => {
               value={values.birthdate}
               handleChange={updateValue}
               errors={errors.birthdate}
-              handleBlur={validate}
+              handleBlur={handleBlur}
             />
           </Box>
           <Box mt={3}>
