@@ -30,6 +30,7 @@ const Form: React.SFC<{}> = props => {
     handleBlur,
     handleSubmit,
     updateValue,
+    reset,
   } = useFormValidation(fields, messages);
 
   return (
@@ -75,6 +76,9 @@ const Form: React.SFC<{}> = props => {
           <Box mt={3}>
             <Button radius={2} p={2} type="submit">
               Submit
+            </Button>
+            <Button ml={2} onClick={reset} radius={2} p={2} type="submit">
+              Reset
             </Button>
           </Box>
         </form>

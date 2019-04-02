@@ -16,18 +16,17 @@ interface Messages {
 }
 
 export const useFormValidation = <T>(fields: Fields<T>, messages: Messages) => {
-  const [values, setValues] = React.useState(
+  const getInitialValues = () =>
     Object.keys(fields).reduce(
       (a, b) => ({ ...a, [b]: fields[b].value }),
       {} as Values<T>
-    )
-  );
-  const initialErrors = Object.keys(fields).reduce(
-    (a, b) => ({ ...a, [b]: [] }),
-    {} as Errors<T>
-  );
+    );
+  const getInitialErrors = () =>
+    Object.keys(fields).reduce((a, b) => ({ ...a, [b]: [] }), {} as Errors<T>);
 
-  const [errors, setErrors] = React.useState(initialErrors);
+  const [values, setValues] = React.useState(getInitialValues());
+
+  const [errors, setErrors] = React.useState(getInitialErrors());
 
   const updateValue = (e: React.FormEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
@@ -81,6 +80,11 @@ export const useFormValidation = <T>(fields: Fields<T>, messages: Messages) => {
     }
   };
 
+  const reset = () => {
+    setValues(getInitialValues());
+    setErrors(getInitialErrors());
+  };
+
   return {
     values,
     setValues,
@@ -88,6 +92,7 @@ export const useFormValidation = <T>(fields: Fields<T>, messages: Messages) => {
     setErrors,
     handleBlur,
     handleSubmit,
+    reset,
     updateValue,
   };
 };
