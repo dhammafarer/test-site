@@ -5,18 +5,38 @@ import { isRequired, isAdult } from "./validations";
 
 type Validator = (value: string) => string;
 
+type Values = { [key: string]: string };
+type Errors = { [key: string]: React.ReactNode[] };
+
 const Form: React.SFC<{}> = props => {
-  const [values, setValues] = React.useState({
-    name: "",
-    birthdate: "",
-  });
-  const validators = { name: [isRequired], birthdate: [isRequired, isAdult] };
+  const fields = {
+    name: {
+      value: "",
+      validators: [isRequired],
+    },
+    birthdate: {
+      value: "",
+      validators: [isRequired, isAdult],
+    },
+  };
+
   const messages = {
     isRequired: <span> is required.</span>,
     isAdult: <span> is invalid.</span>,
   };
 
-  const [errors, setErrors] = React.useState({ name: [], birthdate: [] });
+  const [values, setValues] = React.useState(
+    Object.keys(fields).reduce(
+      (a, b) => ({ ...a, [b]: fields[b].value }),
+      {} as Values
+    )
+  );
+  const initialErrors = Object.keys(fields).reduce(
+    (a, b) => ({ ...a, [b]: [] }),
+    {} as Errors
+  );
+
+  const [errors, setErrors] = React.useState(initialErrors);
 
   const updateValue = (e: React.FormEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
@@ -27,41 +47,47 @@ const Form: React.SFC<{}> = props => {
     setValues(newState);
   };
 
+  const updateErrorsFor = (name: string, errs: React.ReactNode[]) => {
+    setErrors({ ...errors, [name]: errs });
+  };
+
   const validate = (value: string, name: string) => {
-    const valFns = validators[name] as Validator[];
-    if (!valFns) return;
+    const valFns = fields[name].validators as Validator[];
+    if (!valFns) return [];
     const errs = valFns.reduce(
       (a, b) => {
         const err = b(value);
-        if (err) a.push(messages[err] as string);
+        if (err) a.push(messages[err]);
         return a;
       },
-      [] as string[]
+      [] as React.ReactNode[]
     );
-    setErrors(Object.assign({}, { ...errors, [name]: errs }));
+    return errs;
   };
 
   const handleBlur = (e: React.FormEvent<HTMLInputElement>) => {
     const value = e.currentTarget.value;
     const name = e.currentTarget.name;
-    validate(value, name);
+    updateErrorsFor(name, validate(value, name));
   };
 
-  const validateAll = () => {
-    const errs = Object.keys(validators).reduce(
+  const validateForm = () => {
+    return Object.keys(fields).reduce(
       (a, b) => {
-        a[b] = validators[b].map(x => x(values[b])).filter(x => x !== "");
-        return a;
+        const errs = validate(values[b], b);
+        if (errs.length < 1) return [true, a[1]];
+        return [false, Object.assign({}, a[0], { [b]: errs })];
       },
-      { name: [], birthdate: [] }
+      [false, {}]
     );
-    setErrors(errs);
-    return Object.keys(errs).find(k => errs[k].length > 0) ? false : true;
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    if (validateAll()) e.currentTarget.submit();
+    const [valid, errs] = validateForm();
+    if (!valid) {
+      e.preventDefault();
+      setErrors(errs);
+    }
   };
 
   return (

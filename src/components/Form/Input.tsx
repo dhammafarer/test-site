@@ -8,7 +8,7 @@ interface Props {
   type: "text" | "number" | "date";
   value: string;
   required?: boolean;
-  errors?: string[];
+  errors: React.ReactNode[];
   placeholder?: string;
   handleChange: any;
   handleBlur?: any;
