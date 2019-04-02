@@ -51,11 +51,10 @@ const Input: React.SFC<Props> = ({ errors, ...props }) => {
   return (
     <Box>
       <Label htmlFor={props.name}>
-        {errors && errors.length > 0 ? (
-          errors.map(err => <span>{err}</span>)
-        ) : (
-          <span>{props.title}</span>
-        )}
+        <span>{props.title}</span>
+        {errors &&
+          errors.length > 0 &&
+          errors.map((err, i) => <span key={i}>{err}</span>)}
         {props.required && <Required>*</Required>}
       </Label>
       <StyledInput
