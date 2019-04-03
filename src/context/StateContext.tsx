@@ -1,11 +1,14 @@
 import React, { createContext, useContext, useReducer } from "react";
+import { set, over, lensProp, append } from "ramda";
+
+const winesLens = lensProp("wines");
+const loadingLens = lensProp("loading");
 
 interface Action {
   type: "fetchState" | "addItem" | "reset" | "loadingOn" | "loadingOff";
-  item?: string;
+  item?: { wineId: string };
 }
 
-type StateContext = State;
 type DispatchContext = (a: Action) => void;
 
 type Inquiry = {
@@ -15,6 +18,7 @@ type Inquiry = {
 interface UI {
   loading: boolean;
 }
+
 interface State {
   inquiry: Inquiry;
   ui: UI;
@@ -22,7 +26,8 @@ interface State {
 
 const initialState: State = { ui: { loading: false }, inquiry: { wines: [] } };
 
-export const StateContext = createContext<StateContext>(initialState);
+export const InquiryContext = createContext<Inquiry>(initialState.inquiry);
+export const UIContext = createContext<UI>(initialState.ui);
 export const DispatchContext = createContext<DispatchContext>(() => {});
 
 const inquiryReducer = (state: Inquiry, action: Action) => {
@@ -38,14 +43,10 @@ const inquiryReducer = (state: Inquiry, action: Action) => {
       }
     }
     case "addItem": {
-      const newState = { ...state, wines: [...state.wines, action.item] };
-      window.localStorage.setItem("inquiry", JSON.stringify(newState));
-      return newState;
+      return over(winesLens, append(action.item), state);
     }
     case "reset": {
-      const newState = { ...state, wines: [] };
-      window.localStorage.setItem("inquiry", JSON.stringify(newState));
-      return newState;
+      return set(winesLens, [], state);
     }
     default:
       return state;
@@ -55,10 +56,10 @@ const inquiryReducer = (state: Inquiry, action: Action) => {
 const uiReducer = (state: UI, action: Action) => {
   switch (action.type) {
     case "loadingOn": {
-      return { ...state, loading: true };
+      return set(loadingLens, true, state);
     }
     case "loadingOff": {
-      return { ...state, loading: false };
+      return set(loadingLens, false, state);
     }
     default:
       return state;
@@ -73,15 +74,31 @@ const mainReducer = ({ inquiry, ui }: State, action: Action) => {
   };
 };
 
+const InquiryValueProvider: React.SFC<{ value: Inquiry }> = ({
+  value,
+  children,
+}) => (
+  <InquiryContext.Provider value={value}>{children}</InquiryContext.Provider>
+);
+
+const UIValueProvider: React.SFC<{ value: UI }> = ({ value, children }) => (
+  <UIContext.Provider value={value}>{children}</UIContext.Provider>
+);
+
 export const StateProvider: React.SFC<{}> = ({ children }) => {
   const [value, dispatch] = useReducer(mainReducer, initialState);
 
   return (
     <DispatchContext.Provider value={dispatch}>
-      <StateContext.Provider value={value}>{children}</StateContext.Provider>
+      <UIValueProvider value={value.ui}>
+        <InquiryValueProvider value={value.inquiry}>
+          {children}
+        </InquiryValueProvider>
+      </UIValueProvider>
     </DispatchContext.Provider>
   );
 };
 
-export const useStateValue = () => useContext(StateContext);
+export const useInquiryValue = () => useContext(InquiryContext);
+export const useUIValue = () => useContext(UIContext);
 export const useDispatch = () => useContext(DispatchContext);

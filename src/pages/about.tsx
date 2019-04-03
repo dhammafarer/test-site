@@ -1,45 +1,54 @@
 import * as React from "react";
-import { useDispatch, useStateValue } from "src/context/StateContext";
+import {
+  useDispatch,
+  useUIValue,
+  useInquiryValue,
+} from "src/context/StateContext";
 
 const Button: React.SFC<{}> = () => {
-  console.log("rerender button");
+  console.log("button");
   const dispatch = useDispatch();
+  const addItem = () => {
+    dispatch({ type: "loadingOn" });
+    setTimeout(() => {
+      dispatch({ type: "addItem", item: { wineId: "new" } });
+      dispatch({ type: "loadingOff" });
+    }, 1000);
+  };
   return (
     <div>
-      <button onClick={() => dispatch({ type: "addItem", item: "new" })}>
-        add
-      </button>
+      <button onClick={addItem}>add</button>
       <button onClick={() => dispatch({ type: "reset" })}>reset</button>
+      <button onClick={() => dispatch({ type: "loadingOn" })}>Start</button>
+      <button onClick={() => dispatch({ type: "loadingOff" })}>Stop</button>
     </div>
   );
 };
 
-const Loader: React.SFC<{ loading: boolean }> = props => {
-  console.log("rerender load");
-  return <div>{props.loading ? "loading" : "idle"}</div>;
+const Loader: React.SFC<{}> = () => {
+  console.log("loading");
+  const { loading } = useUIValue();
+  return <div>{loading ? "loading" : "idle"}</div>;
 };
 
 const Items: React.SFC<{}> = () => {
-  const { inquiry } = useStateValue();
+  console.log("items");
+  const { wines } = useInquiryValue();
   return (
     <div>
-      {inquiry.wines.map((x, i) => (
-        <div key={i}>{x}</div>
+      {wines.map((x, i) => (
+        <div key={i}>{x.wineId}</div>
       ))}
     </div>
   );
 };
 
 const IndexPage: React.SFC<{}> = props => {
-  const { ui } = useStateValue();
-  React.useEffect(() => {
-    console.log(ui);
-  }, [ui]);
   return (
     <div>
-      <Loader loading={ui.loading} />
-      <Items />
+      <Loader />
       <Button />
+      <Items />
     </div>
   );
 };
