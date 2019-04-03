@@ -5,7 +5,8 @@ interface Action {
   item?: string;
 }
 
-type Context = [State, (a: Action) => void];
+type StateContext = State;
+type DispatchContext = (a: Action) => void;
 
 type Inquiry = {
   wines: { wineId: string }[];
@@ -21,7 +22,8 @@ interface State {
 
 const initialState: State = { ui: { loading: false }, inquiry: { wines: [] } };
 
-export const StateContext = createContext<Context>([initialState, () => {}]);
+export const StateContext = createContext<StateContext>(initialState);
+export const DispatchContext = createContext<DispatchContext>(() => {});
 
 const inquiryReducer = (state: Inquiry, action: Action) => {
   switch (action.type) {
@@ -72,14 +74,14 @@ const mainReducer = ({ inquiry, ui }: State, action: Action) => {
 };
 
 export const StateProvider: React.SFC<{}> = ({ children }) => {
-  const value = useReducer(mainReducer, initialState);
-  React.useEffect(() => {
-    value[1]({ type: "fetchState" });
-  }, []);
+  const [value, dispatch] = useReducer(mainReducer, initialState);
 
   return (
-    <StateContext.Provider value={value}>{children}</StateContext.Provider>
+    <DispatchContext.Provider value={dispatch}>
+      <StateContext.Provider value={value}>{children}</StateContext.Provider>
+    </DispatchContext.Provider>
   );
 };
 
 export const useStateValue = () => useContext(StateContext);
+export const useDispatch = () => useContext(DispatchContext);
