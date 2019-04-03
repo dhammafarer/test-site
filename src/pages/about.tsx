@@ -13,6 +13,12 @@ const Button: React.SFC<{}> = () => {
   );
 };
 
+const Loader: React.SFC<{}> = () => {
+  const [{ ui }] = useStateValue();
+  console.log("rerender load");
+  return <div>{ui.loading ? "loading" : "idle"}</div>;
+};
+
 const Items: React.SFC<{}> = () => {
   const [{ inquiry }] = useStateValue();
   return (
@@ -27,6 +33,7 @@ const Items: React.SFC<{}> = () => {
 const IndexPage: React.SFC<{}> = props => {
   return (
     <div>
+      <Loader />
       <Items />
       <Button />
     </div>

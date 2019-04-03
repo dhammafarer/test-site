@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer } from "react";
 
 interface Action {
-  type: "fetchState" | "addItem" | "reset";
+  type: "fetchState" | "addItem" | "reset" | "loadingOn" | "loadingOff";
   item?: string;
 }
 
@@ -10,11 +10,16 @@ type Context = [State, (a: Action) => void];
 type Inquiry = {
   wines: { wineId: string }[];
 };
+
+interface UI {
+  loading: boolean;
+}
 interface State {
   inquiry: Inquiry;
+  ui: UI;
 }
 
-const initialState: State = { inquiry: { wines: [] } };
+const initialState: State = { ui: { loading: false }, inquiry: { wines: [] } };
 
 export const StateContext = createContext<Context>([initialState, () => {}]);
 
@@ -45,9 +50,26 @@ const inquiryReducer = (state: Inquiry, action: Action) => {
   }
 };
 
-const mainReducer = ({ inquiry }: State, action: Action) => ({
-  inquiry: inquiryReducer(inquiry, action),
-});
+const uiReducer = (state: UI, action: Action) => {
+  switch (action.type) {
+    case "loadingOn": {
+      return { ...state, loading: true };
+    }
+    case "loadingOff": {
+      return { ...state, loading: false };
+    }
+    default:
+      return state;
+  }
+};
+
+const mainReducer = ({ inquiry, ui }: State, action: Action) => {
+  console.log("action: ", action);
+  return {
+    inquiry: inquiryReducer(inquiry, action),
+    ui: uiReducer(ui, action),
+  };
+};
 
 export const StateProvider: React.SFC<{}> = ({ children }) => {
   const value = useReducer(mainReducer, initialState);
