@@ -6,12 +6,12 @@ import { animated as a, useTransition } from "react-spring";
 
 const Grid: React.SFC<{}> = () => {
   const data = [
-    { id: 1, height: 200 },
-    { id: 2, height: 200 },
-    { id: 3, height: 200 },
-    { id: 4, height: 200 },
-    { id: 5, height: 200 },
-    { id: 6, height: 200 },
+    { id: 1, height: 150 },
+    { id: 2, height: 150 },
+    { id: 3, height: 150 },
+    { id: 4, height: 150 },
+    { id: 5, height: 150 },
+    { id: 6, height: 150 },
   ];
 
   const columns = useMedia(
@@ -20,16 +20,18 @@ const Grid: React.SFC<{}> = () => {
     2
   );
   const [bind, { width }] = useMeasure();
-  const [items, set] = React.useState(data);
+  const [items] = React.useState(data);
 
-  let heights = new Array(columns).fill(0); // Each column gets a height starting with zero
+  let heights = new Array(columns).fill(0);
   let gridItems = items.map((child, i) => {
-    const column = heights.indexOf(Math.min(...heights)); // Basic masonry-grid placing, puts tile into the smallest column using Math.min
+    const column = i % columns;
     const xy = [
       (width / columns) * column,
-      (heights[column] += child.height / 2) - child.height / 2,
-    ]; // X = container width / number of columns * column index, Y = it's just the height of the current column
-    return { ...child, xy, width: width / columns, height: child.height / 2 };
+      (heights[column] += child.height) - child.height,
+    ];
+    const res = { ...child, xy, width: width / columns, height: child.height };
+    console.log(res);
+    return res;
   });
 
   const transitions = useTransition(gridItems, item => item.id, {
@@ -42,16 +44,20 @@ const Grid: React.SFC<{}> = () => {
   });
 
   return (
-    <div {...bind} style={{ height: Math.max(...heights) }}>
+    <div
+      {...bind}
+      style={{ position: "relative", height: Math.max(...heights) }}
+    >
       {transitions.map(({ item, props: { xy, ...rest }, key }) => (
         <a.div
           key={key}
           style={{
+            position: "absolute",
             transform: xy.interpolate((x, y) => `translate3d(${x}px,${y}px,0)`),
             ...rest,
           }}
         >
-          <Box bg="grey.200" style={{ height: "100%" }} m={1}>
+          <Box bg="grey.200" style={{ height: "100%" }}>
             content
           </Box>
         </a.div>
