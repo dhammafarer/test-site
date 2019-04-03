@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
-export default function useMedia(
+export const useMedia = (
   queries: string[],
   values: number[],
   defaultValue: number
-) {
+) => {
   const match = () =>
     values[queries.findIndex(q => matchMedia(q).matches)] || defaultValue;
   const [value, set] = useState(match);
@@ -14,4 +14,4 @@ export default function useMedia(
     return () => window.removeEventListener("resize", handler);
   }, []);
   return value;
-}
+};
