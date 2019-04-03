@@ -14,13 +14,10 @@ const Button: React.SFC<{}> = () => {
 };
 
 const Items: React.SFC<{}> = () => {
-  const [state, dispatch] = useStateValue();
-  React.useEffect(() => {
-    dispatch({ type: "fetchState" });
-  }, []);
+  const [{ inquiry }] = useStateValue();
   return (
     <div>
-      {state.wines.map((x, i) => (
+      {inquiry.wines.map((x, i) => (
         <div key={i}>{x}</div>
       ))}
     </div>

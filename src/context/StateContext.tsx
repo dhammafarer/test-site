@@ -7,15 +7,18 @@ interface Action {
 
 type Context = [State, (a: Action) => void];
 
+type Inquiry = {
+  wines: { wineId: string }[];
+};
 interface State {
-  wines: string[];
+  inquiry: Inquiry;
 }
 
-const initialState: State = { wines: [] };
+const initialState: State = { inquiry: { wines: [] } };
 
 export const StateContext = createContext<Context>([initialState, () => {}]);
 
-const reducer = (state: State, action: any) => {
+const inquiryReducer = (state: Inquiry, action: Action) => {
   switch (action.type) {
     case "fetchState": {
       const ls = window.localStorage.getItem("inquiry");
@@ -42,8 +45,12 @@ const reducer = (state: State, action: any) => {
   }
 };
 
+const mainReducer = ({ inquiry }: State, action: Action) => ({
+  inquiry: inquiryReducer(inquiry, action),
+});
+
 export const StateProvider: React.SFC<{}> = ({ children }) => {
-  const value = useReducer(reducer, initialState);
+  const value = useReducer(mainReducer, initialState);
   React.useEffect(() => {
     value[1]({ type: "fetchState" });
   }, []);
