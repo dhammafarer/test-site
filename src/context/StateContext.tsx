@@ -1,13 +1,18 @@
 import React, { createContext, useContext, useReducer } from "react";
-import { set, over, lensProp, append } from "ramda";
+import { remove, set, over, lensProp, append } from "ramda";
+import shuffle from "lodash.shuffle";
 
 const winesLens = lensProp("wines");
 const loadingLens = lensProp("loading");
 
-interface Action {
-  type: "fetchState" | "addItem" | "reset" | "loadingOn" | "loadingOff";
-  item?: { wineId: string };
-}
+type Action =
+  | { type: "fetchState" }
+  | { type: "addItem"; item: { wineId: string } }
+  | { type: "removeItem"; idx: number }
+  | { type: "reset" }
+  | { type: "loadingOn" }
+  | { type: "loadingOff" }
+  | { type: "shuffleItems" };
 
 type DispatchContext = (a: Action) => void;
 
@@ -45,8 +50,14 @@ const inquiryReducer = (state: Inquiry, action: Action) => {
     case "addItem": {
       return over(winesLens, append(action.item), state);
     }
+    case "removeItem": {
+      return over(winesLens, remove(action.idx, 1), state);
+    }
     case "reset": {
       return set(winesLens, [], state);
+    }
+    case "shuffleItems": {
+      return over(winesLens, shuffle, state);
     }
     default:
       return state;
