@@ -16,6 +16,8 @@
     "interface-name": [true, "never-prefix"],
     "ordered-imports": false,
     "object-literal-sort-keys": false,
-    "jsx-boolean-value": false
+    "jsx-boolean-value": false,
+    "react-hooks-nesting": "error",
+    "react-hooks/exhaustive-deps": "error"
   }
 }
