@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "author": "Pawel Lisewski <pawel.lisewski@gmail.com>",
   "dependencies": {
+    "@types/lodash": "^4.14.123",
     "@types/react-helmet": "^5.0.8",
     "babel-plugin-styled-components": "^1.10.0",
     "browser-locale": "^1.0.3",
@@ -25,6 +26,7 @@
     "gatsby-transformer-remark": "^2.3.4",
     "gatsby-transformer-sharp": "^2.1.17",
     "intersection-observer": "^0.5.1",
+    "lodash": "^4.17.11",
     "lodash.shuffle": "^4.2.0",
     "netlify-cms": "^2.6.1",
     "object-fit-images": "^3.2.4",
