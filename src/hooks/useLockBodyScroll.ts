@@ -1,14 +1,15 @@
 import { useLayoutEffect } from "react";
+import { disableBodyScroll, enableBodyScroll } from "body-scroll-lock";
 
 export const useLockBodyScroll = () => {
   useLayoutEffect(() => {
-    const originalStyle = window.getComputedStyle(document.body).position;
-    const scrollPos = window.scrollY;
-    document.body.style.position = "fixed";
+    //const originalOverflow = window.getComputedStyle(document.body).overflow;
+    //document.body.style.overflow = "hidden";
+    disableBodyScroll(document.body, { reserveScrollBarGap: true });
 
     return () => {
-      document.body.style.position = originalStyle;
-      window.scrollTo(0, scrollPos);
+      //document.body.style.overflow = originalOverflow;
+      enableBodyScroll(document.body, { reserveScrollBarGap: true });
     };
   }, []);
 };

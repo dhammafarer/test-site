@@ -1,13 +1,8 @@
-import React, {
-  MouseEvent,
-  useReducer,
-  useRef,
-  useEffect,
-  useState,
-} from "react";
+import React, { useReducer, useRef, useEffect, useState } from "react";
 import { Box } from "primithemes";
 import { useLockBodyScroll } from "src/hooks/useLockBodyScroll";
 import { debounce } from "lodash";
+import Faker from "faker";
 
 const Menu: React.SFC<{}> = () => {
   useLockBodyScroll();
@@ -58,7 +53,7 @@ const useHidingMenu = () => {
       }
       last.current = curr;
     },
-    500,
+    300,
     { leading: true, trailing: true }
   );
 
@@ -70,6 +65,8 @@ const useHidingMenu = () => {
   return { style };
 };
 
+const txt = Faker.lorem.paragraphs();
+
 const IndexPage: React.SFC<{}> = props => {
   const [show, set] = useState(false);
   const { style } = useHidingMenu();
@@ -78,17 +75,37 @@ const IndexPage: React.SFC<{}> = props => {
       <Box
         w={1}
         p={3}
-        bg="white.light"
+        bg="grey.300"
         style={{
           ...style,
           transition: "200ms ease-out",
         }}
       >
         <button onClick={() => set(!show)}>toggle</button>
-        {show && <Menu />}
       </Box>
-      <Box bg="primary.light" style={{ height: "100vh" }} />
-      <Box bg="primary.main" style={{ height: "100vh" }} />
+      <Box w={1}>
+        <Box bg="primary.light" p={4} w={1} style={{ height: "100vh" }}>
+          {txt}
+        </Box>
+        <Box bg="primary.main" w={1} style={{ height: "100vh" }}>
+          content
+        </Box>
+      </Box>
+      {show && (
+        <Box
+          style={{
+            height: "100vh",
+            position: "fixed",
+            zIndex: 5,
+            top: 0,
+            right: 0,
+            width: "300px",
+          }}
+          bg="text.main"
+        >
+          <Menu />
+        </Box>
+      )}
     </div>
   );
 };
