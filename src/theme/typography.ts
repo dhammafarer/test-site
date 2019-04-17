@@ -1,5 +1,5 @@
 import { css } from "styled-components";
-import { color, lineHeight } from "./index";
+import { lineHeight } from "./index";
 import { rem } from "./utils";
 import { tablet } from "./media";
 import { fonts } from "./index";
@@ -8,7 +8,8 @@ export const base = css`
   margin: 0;
   margin-bottom: 1.5rem;
   font-family: ${fonts.sans};
-  color: ${color("text.dark")};
+  font-weight: 400;
+  color: inherit;
 `;
 
 // Hero or blog post title
@@ -26,7 +27,7 @@ export const canon = css`
 export const trafalgar = css`
   ${base}
   font-size: ${rem(24)};
-  line-height: ${lineHeight(0)};
+  line-height: ${lineHeight(1)};
 
   ${tablet(css`
     font-size: ${rem(32)};

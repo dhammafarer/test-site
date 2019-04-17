@@ -14,7 +14,7 @@ const media = (idx: number) => (inner: FlattenSimpleInterpolation) => css`
   }
 `;
 
-export const phone = media(1);
-export const tablet = media(2);
+export const tablet = media(1);
+export const laptop = media(2);
 export const desktop = media(3);
 export const wide = media(4);
