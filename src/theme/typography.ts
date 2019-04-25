@@ -2,16 +2,26 @@ import { css } from "styled-components";
 import { lineHeight } from "./index";
 import { rem } from "./utils";
 import { tablet } from "./media";
-import { fonts } from "./index";
+import { fonts, weight } from "./index";
 
 export const base = css`
   margin: 0;
   margin-bottom: 1.5rem;
+  font-weight: ${weight("normal")};
   font-family: ${fonts.sans};
-  font-weight: 400;
   color: inherit;
 `;
 
+// infographics, immersive stories
+export const foolscap = css`
+  ${base}
+  font-size: ${rem(40)};
+  line-height: ${lineHeight(0)};
+
+  ${tablet(css`
+    font-size: ${rem(56)};
+  `)}
+`;
 // Hero or blog post title
 export const canon = css`
   ${base}
@@ -19,18 +29,18 @@ export const canon = css`
   line-height: ${lineHeight(0)};
 
   ${tablet(css`
-    font-size: ${rem(44)};
+    font-size: ${rem(46)};
   `)}
 `;
 
 // Article title or section header
 export const trafalgar = css`
   ${base}
-  font-size: ${rem(24)};
+  font-size: ${rem(28)};
   line-height: ${lineHeight(1)};
 
   ${tablet(css`
-    font-size: ${rem(32)};
+    font-size: ${rem(36)};
   `)}
 `;
 
@@ -86,10 +96,6 @@ export const longPrimer = css`
   ${base}
   font-size: ${rem(15)};
   line-height: ${lineHeight(3)};
-
-  ${tablet(css`
-    font-size: ${rem(14)};
-  `)}
 `;
 
 // Time stamps and bylines
@@ -97,10 +103,6 @@ export const brevier = css`
   ${base}
   font-size: ${rem(14)};
   line-height: ${lineHeight(3)};
-
-  ${tablet(css`
-    font-size: ${rem(13)};
-  `)}
 `;
 
 // small header capitals
@@ -108,8 +110,4 @@ export const minion = css`
   ${base}
   font-size: ${rem(12)};
   line-height: ${lineHeight(3)};
-
-  ${tablet(css`
-    font-size: ${rem(12)};
-  `)}
 `;

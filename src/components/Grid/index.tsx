@@ -1,6 +1,6 @@
 import * as React from "react";
-import { useMedia } from "./useMedia";
-import { useMeasure } from "./useMeasure";
+import { useMedia } from "src/hooks/useMedia";
+import { useMeasure } from "src/hooks/useMeasure";
 import { Box } from "primithemes";
 import { animated as a, useTransition } from "react-spring";
 
