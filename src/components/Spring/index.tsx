@@ -2,7 +2,7 @@ import * as React from "react";
 import styled from "styled-components";
 import { space, color } from "src/theme";
 import { doublePica } from "src/theme/typography";
-import { useSpring, animated } from "react-spring";
+import { useSpring, useTrail, animated } from "react-spring";
 import { useMeasure } from "src/hooks/useMeasure";
 
 const Box = styled.div`
@@ -37,6 +37,8 @@ const usePrevious = (value: any) => {
   return ref.current;
 };
 
+const items = ["one", "two", "three", "four"];
+
 const Spring: React.SFC<{}> = () => {
   const [show, toggle] = React.useState(false);
   const [bind, { height: viewHeight }] = useMeasure();
@@ -45,6 +47,7 @@ const Spring: React.SFC<{}> = () => {
     from: { height: 0, opacity: 0 },
     to: { height: show ? viewHeight : 0, opacity: show ? 1 : 0 },
   });
+  const trail = useTrail(items.length, { opacity: show ? 1 : 0 });
   return (
     <Box>
       <Title>Box</Title>
@@ -54,10 +57,10 @@ const Spring: React.SFC<{}> = () => {
       >
         <animated.div {...bind}>
           <Content>
-            {["one", "two", "three", "four"].map(x => (
-              <div key={x} style={{ padding: "4px" }}>
-                <Card>{x}</Card>
-              </div>
+            {trail.map(({ opacity }, i) => (
+              <animated.div key={i} style={{ opacity, padding: "4px" }}>
+                <Card>{items[i]}</Card>
+              </animated.div>
             ))}
           </Content>
         </animated.div>
