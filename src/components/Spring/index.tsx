@@ -1,11 +1,14 @@
 import * as React from "react";
 import styled from "styled-components";
-import { space, color } from "src/theme";
+import { radius, space, color } from "src/theme";
 import { doublePica } from "src/theme/typography";
 import { useSpring, useTrail, animated } from "react-spring";
 import { useMeasure } from "src/hooks/useMeasure";
 
 const Box = styled.div`
+  & * {
+    box-sizing: border-box;
+  }
   margin: ${space(3)};
   padding: ${space(3)};
   border: 1px solid ${color("grey.200")};
@@ -14,7 +17,40 @@ const Box = styled.div`
 const Title = styled.div`
   ${doublePica};
 `;
-const Toggle = styled.button``;
+
+const Toggle = styled.button`
+  margin-bottom: 0;
+  appearance: none;
+  border: 1px solid ${color("divider.light")};
+  border-radius: ${radius(2)};
+  background: none;
+  cursor: pointer;
+  outline: none;
+  text-transform: capitalize;
+  position: relative;
+  overflow: hidden;
+  width: 60px;
+  height: 30px;
+`;
+
+const Inner = styled(animated.div)`
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  height: 100%;
+  width: 100%;
+`;
+
+const Item = styled(animated.div)<{ bg: string }>`
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  background: ${props => props.bg};
+`;
 
 const Stock = styled(animated.div)`
   margin-top: ${space(2)};
@@ -30,6 +66,28 @@ const Card = styled.div`
   background: ${color("grey.200")};
   border-radius: 4px;
 `;
+
+const Button: React.SFC<{ active: boolean; onClick: any }> = ({
+  active,
+  children,
+  ...rest
+}) => {
+  const props = useSpring({
+    x: active ? 0 : -100,
+  });
+  return (
+    <Toggle {...rest}>
+      <Inner
+        style={{
+          transform: props.x.interpolate(x => `translate3d(${x}%,0,0)`),
+        }}
+      >
+        <Item bg="red">Hide</Item>
+        <Item bg="green">Show</Item>
+      </Inner>
+    </Toggle>
+  );
+};
 
 const usePrevious = (value: any) => {
   const ref = React.useRef();
@@ -51,7 +109,7 @@ const Spring: React.SFC<{}> = () => {
   return (
     <Box>
       <Title>Box</Title>
-      <Toggle onClick={() => toggle(!show)}>{show ? "hide" : "show"}</Toggle>
+      <Button active={show} onClick={() => toggle(!show)} />
       <Stock
         style={{ height: show && previous === show ? "auto" : height, opacity }}
       >
