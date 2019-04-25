@@ -20,8 +20,9 @@ const Title = styled.div`
 
 const Toggle = styled.button`
   margin-bottom: 0;
+  padding: 0;
   appearance: none;
-  border: 1px solid ${color("divider.light")};
+  border: 1px solid ${color("divider.main")};
   border-radius: ${radius(2)};
   background: none;
   cursor: pointer;
@@ -29,27 +30,31 @@ const Toggle = styled.button`
   text-transform: capitalize;
   position: relative;
   overflow: hidden;
-  width: 60px;
-  height: 30px;
+  height: 40px;
 `;
 
 const Inner = styled(animated.div)`
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: flex;
   height: 100%;
-  width: 100%;
 `;
 
 const Item = styled(animated.div)<{ bg: string }>`
   display: flex;
+  padding: ${space(2)};
   flex: 1 0 auto;
   align-items: center;
   justify-content: center;
   height: 100%;
-  width: 100%;
-  background: ${props => props.bg};
+  width: 100px;
+  &:hover,
+  &:active {
+    background: ${color("grey.100")};
+  }
+  &:first-child {
+    background: ${color("grey.200")};
+    &:hover {
+      background: ${color("grey.300")};
+    }
+  }
 `;
 
 const Stock = styled(animated.div)`
@@ -59,6 +64,8 @@ const Stock = styled(animated.div)`
 
 const Content = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  width: 100%;
 `;
 
 const Card = styled.div`
@@ -73,17 +80,17 @@ const Button: React.SFC<{ active: boolean; onClick: any }> = ({
   ...rest
 }) => {
   const props = useSpring({
-    x: active ? 0 : -100,
+    y: active ? "0%" : "-100%",
   });
   return (
     <Toggle {...rest}>
       <Inner
         style={{
-          transform: props.x.interpolate(x => `translate3d(${x}%,0,0)`),
+          transform: props.y.interpolate(y => `translate3d(0,${y},0)`),
         }}
       >
-        <Item bg="red">Hide</Item>
-        <Item bg="green">Show</Item>
+        <Item>Hide</Item>
+        <Item>Show</Item>
       </Inner>
     </Toggle>
   );
@@ -116,7 +123,10 @@ const Spring: React.SFC<{}> = () => {
         <animated.div {...bind}>
           <Content>
             {trail.map(({ opacity }, i) => (
-              <animated.div key={i} style={{ opacity, padding: "4px" }}>
+              <animated.div
+                key={i}
+                style={{ width: "50%", opacity, padding: "4px" }}
+              >
                 <Card>{items[i]}</Card>
               </animated.div>
             ))}
