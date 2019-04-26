@@ -14,6 +14,9 @@ const GlobalStyle = createGlobalStyle`
     padding: 0;
     box-sizing: border-box;
   }
+  body {
+    overflow-x: hidden;
+  }
 `;
 
 export const BaseLayout: React.SFC<{}> = ({ children }) => {

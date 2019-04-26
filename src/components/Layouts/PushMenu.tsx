@@ -1,8 +1,15 @@
 import * as React from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { space, color, shadow } from "src/theme";
 import { animated, useSpring } from "react-spring";
 import { useMedia } from "src/hooks/useMedia";
+import { desktop } from "src/theme/media";
+import { Menu } from "./Menu";
+import { FormatIndentDecrease } from "styled-icons/material/FormatIndentDecrease";
+import { FormatIndentIncrease } from "styled-icons/material/FormatIndentIncrease";
+import Faker from "faker";
+
+const content = Faker.lorem.paragraphs();
 
 const width = "250px";
 
@@ -12,18 +19,45 @@ const Root = styled.div`
   height: 100%;
   min-height: 100vh;
   z-index: 0;
-  overflow-x: hidden;
 `;
 
 const Main = styled(animated.div)`
-  z-index: 99;
+  position: relative;
+  z-index: 2;
   height: 100%;
   background: ${color("grey.100")};
   transition: 400ms ease-out;
   box-shadow: ${shadow(1)};
-  overflow-x: hidden;
-  min-width: 400px;
+  min-width: 100%;
+  ${desktop(css`
+    min-width: auto;
+  `)}
 `;
+
+const TopBar = styled.div`
+  position: sticky;
+  top: 0px;
+  background: transparent;
+  border-bottom: 1px solid ${color("white.light")};
+`;
+
+const Toggle = styled.button<{ open: boolean }>`
+  position: static;
+  -webkit-appearance: none;
+  outline: none;
+  background: transparent;
+  border: none;
+  color: ${color("text.main")};
+  top: ${space(2)};
+  left: ${space(2)};
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  &:hover {
+    background: ${color("white.main")};
+  }
+`;
+
 const Sidebar = styled.div`
   position: fixed;
   top: 0;
@@ -31,19 +65,13 @@ const Sidebar = styled.div`
   bottom: 0;
   right: 0;
   z-index: -1;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   width: ${width};
-  background: ${color("grey.400")};
+  background: ${color("grey.200")};
   height: 100vh;
 `;
 
-const TopBar = styled.div`
-  width: 100%;
-  padding: ${space(2)};
-  position: fixed;
-  top: 0;
-  background: ${color("divider.light")};
-`;
 const Container = styled.div`
   max-width: 960px;
   margin: 0 auto;
@@ -65,14 +93,20 @@ const PushMenu: React.SFC<{}> = ({ children }) => {
   return (
     <Root>
       <Sidebar>
-        <div>content</div>
+        <Menu open={open} />
       </Sidebar>
       <Main style={props}>
         <TopBar>
-          <button onClick={() => toggle(!open)}>toggle</button>
+          <Toggle open={open} onClick={() => toggle(!open)}>
+            {open ? (
+              <FormatIndentDecrease size={24} />
+            ) : (
+              <FormatIndentIncrease size={24} />
+            )}
+          </Toggle>
         </TopBar>
         <Container>
-          {["first", "second", "third"].map((x, i) => (
+          {[content, "second", "third"].map((x, i) => (
             <Section i={i} key={i}>
               {x}
             </Section>
