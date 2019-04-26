@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 
-export const useMedia = (
+export const useMedia = <T>(
   queries: string[],
-  values: number[],
-  defaultValue: number
+  values: T[],
+  defaultValue: T
 ) => {
   const match = () =>
     values[queries.findIndex(q => matchMedia(q).matches)] || defaultValue;
