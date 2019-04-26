@@ -1,11 +1,11 @@
 import * as React from "react";
-import { Spring } from "src/components/Spring";
+import { Spring, MultiStageTransitions } from "src/components/Spring";
 
 const TouchPage: React.SFC<{}> = props => {
   return (
     <div>
       <Spring />
-      <Spring />
+      <MultiStageTransitions />
     </div>
   );
 };
